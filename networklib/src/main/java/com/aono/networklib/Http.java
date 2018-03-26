@@ -3,6 +3,7 @@ package com.aono.networklib;
 import android.content.Context;
 import android.text.TextUtils;
 
+import com.aono.networklib.api.NetWorkApi;
 import com.aono.networklib.interceptor.DynamicParamsInterceptor;
 import com.aono.networklib.interceptor.HeadInterceptor;
 import com.aono.networklib.interceptor.LogInterceptor;
@@ -96,8 +97,8 @@ public class Http {
 			return this;
 		}
 
-		public NetWorkApiBuilder setAddSessionId(boolean addSessionId) {
-			this.isAddSessionId = addSessionId;
+		public NetWorkApiBuilder addSessionId() {
+			this.isAddSessionId = true;
 			return this;
 		}
 
@@ -106,8 +107,8 @@ public class Http {
 			return this;
 		}
 
-		public NetWorkApiBuilder setAddRegularParams(boolean addRegularParams) {
-			this.isAddRegularParams = addRegularParams;
+		public NetWorkApiBuilder addRegularParams() {
+			this.isAddRegularParams = true;
 			return this;
 		}
 

@@ -1,5 +1,8 @@
 package com.aono.networklib.api;
 
+import com.aono.networklib.bean.ImiRequestBean;
+import com.aono.networklib.fun.ApiExceptionFun;
+import com.aono.networklib.fun.StringToJSONObjectFun;
 import com.google.gson.Gson;
 
 import org.json.JSONObject;
@@ -8,6 +11,8 @@ import java.util.Map;
 
 import io.reactivex.Observable;
 import io.reactivex.Scheduler;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 
@@ -18,9 +23,12 @@ import okhttp3.RequestBody;
 public abstract class BaseApi {
 
 
-	public static RequestBody toBody(Map map){
+	public static RequestBody toBody(Map<String, String> map){
 		Gson gson = new Gson();
-		return RequestBody.create(MediaType.parse("application/json; charset=utf-8"), gson.toJson(map));
+		ImiRequestBean bean = new ImiRequestBean();
+		bean.setMap(map);
+		bean.setTimeStamp(System.currentTimeMillis());
+		return RequestBody.create(MediaType.parse("application/json; charset=utf-8"), gson.toJson(bean));
 	}
 
 	public static RequestBody toBody(JSONObject jsonObject){
@@ -40,18 +48,18 @@ public abstract class BaseApi {
 			this.observable = observable;
 		}
 
-		public ObservableBuilder addApiException(boolean apiException) {
-			this.apiException = apiException;
+		public ObservableBuilder addApiException() {
+			this.apiException = true;
 			return this;
 		}
 
-		public ObservableBuilder addToJsonObject(boolean toJsonObject) {
-			this.toJsonObject = toJsonObject;
+		public ObservableBuilder addToJsonObject() {
+			this.toJsonObject = true;
 			return this;
 		}
 
-		public ObservableBuilder setWeb(boolean web) {
-			isWeb = web;
+		public ObservableBuilder addWeb() {
+			isWeb = true;
 			return this;
 		}
 
@@ -65,9 +73,26 @@ public abstract class BaseApi {
 
 		public Observable build(){
 
-//			if (isWeb){
-//				observable = observable.map(new StringToJSONObjectFun<>());
-//			}
+			if (isWeb){
+				observable = observable.map(new StringToJSONObjectFun());
+			}
+
+			if (apiException){
+				observable = observable.flatMap(new ApiExceptionFun());
+			}
+
+			if (subscribeScheduler != null){
+				observable = observable.subscribeOn(subscribeScheduler);
+			}else {
+				observable = observable.subscribeOn(Schedulers.io());
+			}
+
+			if (observerScheduler != null){
+				observable = observable.observeOn(observerScheduler);
+			}else {
+				observable = observable.observeOn(AndroidSchedulers.mainThread());
+			}
+
 			return observable;
 		}
 	}

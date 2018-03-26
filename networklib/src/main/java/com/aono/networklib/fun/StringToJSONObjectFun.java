@@ -1,6 +1,8 @@
 package com.aono.networklib.fun;
 
-import com.aono.networklib.R;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
@@ -9,11 +11,17 @@ import io.reactivex.functions.Function;
  * Created by Aono on 2018/3/23.
  */
 
-public class StringToJSONObjectFun<T> implements Function<T,R> {
+public class StringToJSONObjectFun<String> implements Function<String,JSONObject> {
 
 
 	@Override
-	public R apply(@NonNull T t) throws Exception {
-		return null;
+	public JSONObject apply(@NonNull String str) throws Exception {
+		JSONObject object = null;
+		try{
+			object = new JSONObject(str.toString());
+		}catch (JSONException e){
+			e.printStackTrace();
+		}
+		return object;
 	}
 }
