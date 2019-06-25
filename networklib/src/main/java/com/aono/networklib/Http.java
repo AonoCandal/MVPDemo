@@ -87,7 +87,7 @@ public class Http {
         private static final long DEFAULT_TIMEOUT = 3000;
         private String baseUrl;                                            //跟地址
         private boolean isAddSessionId;                                    //是否添加sessionId
-        private HashMap<String, String> dynamicParams;                    //url动态参数
+        private HashMap<String, String> dynamicParams;                     //url动态参数
         private boolean isAddRegularParams;                                //url固定参数是否添加
         private Retrofit.Builder rfBuilder;                                //retrofit builder
         private OkHttpClient.Builder okBuilder;                            //ok builder
@@ -159,14 +159,12 @@ public class Http {
 
             /********************retrofit*********************/
 
-            if (converterFactory != null) {
-                rfBuilder.addConverterFactory(converterFactory);
-            } else {
-                Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").serializeNulls().create();
-                rfBuilder.addConverterFactory(GsonConverterFactory.create(gson));
-            }
-
             return rfBuilder
+                    .addConverterFactory(converterFactory != null
+                            ? converterFactory
+                            : GsonConverterFactory.create(
+                            new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss")
+                                    .serializeNulls().create()))
                     .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                     .client(okBuilder.build())
                     .build()
