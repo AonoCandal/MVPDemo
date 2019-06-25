@@ -23,78 +23,82 @@ import okhttp3.RequestBody;
 public abstract class BaseApi {
 
 
-	public static RequestBody toBody(Map<String, String> map){
-		Gson gson = new Gson();
-		ImiRequestBean bean = new ImiRequestBean();
-		bean.setMap(map);
-		bean.setTimeStamp(System.currentTimeMillis());
-		return RequestBody.create(MediaType.parse("application/json; charset=utf-8"), gson.toJson(bean));
-	}
+    public static RequestBody toBody(Map<String, String> map) {
+        Gson gson = new Gson();
+        ImiRequestBean bean = new ImiRequestBean();
+        bean.setMap(map);
+        bean.setTimeStamp(System.currentTimeMillis());
+        return RequestBody.create(MediaType.parse("application/json; charset=utf-8"), gson.toJson(bean));
+    }
 
-	public static RequestBody toBody(JSONObject jsonObject){
-		return RequestBody.create(MediaType.parse("application/json; charset=utf-8"), jsonObject.toString());
-	}
+    public static RequestBody toBody(JSONObject jsonObject) {
+        return RequestBody.create(MediaType.parse("application/json; charset=utf-8"), jsonObject.toString());
+    }
 
-	public static class ObservableBuilder{
+    public static class ObservableBuilder {
 
-		private Observable observable;
-		private boolean apiException;
-		private boolean toJsonObject;
-		private boolean isWeb;
-		private Scheduler subscribeScheduler;
-		private Scheduler observerScheduler;
+        private Observable observable;
+        private boolean apiException;
+        private boolean toJsonObject;
+        private boolean isWeb;
+        private Scheduler subscribeScheduler;
+        private Scheduler observerScheduler;
 
-		public ObservableBuilder(Observable observable) {
-			this.observable = observable;
-		}
+        public ObservableBuilder(Observable observable) {
+            this.observable = observable;
+        }
 
-		public ObservableBuilder addApiException() {
-			this.apiException = true;
-			return this;
-		}
+        /**
+         * 添加API 回调异常反馈
+         * @return this
+         */
+        public ObservableBuilder addApiException() {
+            this.apiException = true;
+            return this;
+        }
 
-		public ObservableBuilder addToJsonObject() {
-			this.toJsonObject = true;
-			return this;
-		}
+        public ObservableBuilder addToJsonObject() {
+            this.toJsonObject = true;
+            return this;
+        }
 
-		public ObservableBuilder addWeb() {
-			isWeb = true;
-			return this;
-		}
+        public ObservableBuilder addWeb() {
+            isWeb = true;
+            return this;
+        }
 
-		public void setSubscribeScheduler(Scheduler subscribeScheduler) {
-			this.subscribeScheduler = subscribeScheduler;
-		}
+        public void setSubscribeScheduler(Scheduler subscribeScheduler) {
+            this.subscribeScheduler = subscribeScheduler;
+        }
 
-		public void setObserverScheduler(Scheduler observerScheduler) {
-			this.observerScheduler = observerScheduler;
-		}
+        public void setObserverScheduler(Scheduler observerScheduler) {
+            this.observerScheduler = observerScheduler;
+        }
 
-		public Observable build(){
+        public Observable build() {
 
-			if (isWeb){
-				observable = observable.map(new StringToJSONObjectFun());
-			}
+            if (isWeb) {
+                observable = observable.flatMap(new StringToJSONObjectFun());
+            }
 
-			if (apiException){
-				observable = observable.flatMap(new ApiExceptionFun());
-			}
+            if (apiException) {
+                observable = observable.flatMap(new ApiExceptionFun());
+            }
 
-			if (subscribeScheduler != null){
-				observable = observable.subscribeOn(subscribeScheduler);
-			}else {
-				observable = observable.subscribeOn(Schedulers.io());
-			}
+            if (subscribeScheduler != null) {
+                observable = observable.subscribeOn(subscribeScheduler);
+            } else {
+                observable = observable.subscribeOn(Schedulers.io());
+            }
 
-			if (observerScheduler != null){
-				observable = observable.observeOn(observerScheduler);
-			}else {
-				observable = observable.observeOn(AndroidSchedulers.mainThread());
-			}
+            if (observerScheduler != null) {
+                observable = observable.observeOn(observerScheduler);
+            } else {
+                observable = observable.observeOn(AndroidSchedulers.mainThread());
+            }
 
-			return observable;
-		}
-	}
+            return observable;
+        }
+    }
 
 }

@@ -21,10 +21,10 @@ public class MobileApi extends BaseApi {
 
 	public static NetWorkApi getNetWorkApi(){
 		if (netWorkApi == null){
-			netWorkApi = new Http.NetWorkApiBuilder()
+			netWorkApi = new Http.Builder()
 					.addSessionId()
 					.addRegularParams()
-					.build();
+					.build(NetWorkApi.class);
 		}
 		return netWorkApi;
 	}

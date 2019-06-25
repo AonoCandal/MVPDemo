@@ -1,5 +1,6 @@
 package com.aono.mvpdemo;
 
+import android.app.Activity;
 import android.os.Bundle;
 
 import com.aono.baseui.base.BaseActivity;
@@ -16,5 +17,10 @@ public class MainActivity extends BaseActivity implements MainContract.View{
 	@Override
 	protected BasePresenter createPresenter() {
 		return new MainPresenter();
+	}
+
+	@Override
+	public Activity getActivity() {
+		return this;
 	}
 }
