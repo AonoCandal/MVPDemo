@@ -19,8 +19,4 @@ public interface NetWorkApi {
 	@POST("open/open.do")
 	Observable<ResponseInfo<Object>> response(@Query("ACID") int acid, @Body RequestBody entery);
 
-	@GET("")
-	Call<ResponseInfo<Object>> getCall();
-
-
 }

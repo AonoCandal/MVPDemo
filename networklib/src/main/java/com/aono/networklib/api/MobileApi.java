@@ -1,10 +1,14 @@
 package com.aono.networklib.api;
 
-import com.aono.networklib.Http;
+import com.aono.networklib.HttpManager;
 
 import java.util.Map;
 
 import io.reactivex.Observable;
+import io.reactivex.Scheduler;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.RequestBody;
 
 /**
@@ -21,7 +25,7 @@ public class MobileApi extends BaseApi {
 
 	public static NetWorkApi getNetWorkApi(){
 		if (netWorkApi == null){
-			netWorkApi = new Http.Builder()
+			netWorkApi = new HttpManager.Builder()
 					.addSessionId()
 					.addRegularParams()
 					.build(NetWorkApi.class);
@@ -36,6 +40,9 @@ public class MobileApi extends BaseApi {
 					.build();
 		}
 		return observable;
+
+
+
 	}
 
 	public static Observable response(Map<String, String> map, int protocolId){
